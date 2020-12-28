@@ -1,6 +1,6 @@
 const puppeteer = require('puppeteer');
 const fs = require('fs');
-const cookies = require('./cookies.json');
+const config = require('./config.json');
 async function scrapeMLS(url) 
 {
     /*Start puppeteer and create a new page*/
@@ -10,16 +10,24 @@ async function scrapeMLS(url)
         /*go to paragon login page*/
         await page.goto(url), {waitUntil: 'networkidle0'};
         /*enter username and password*/
-        await page.type('#LoginName', 'username', {delay: 30});
-        await page.type('#Password', 'password', {delay: 30});
+        await page.type('#LoginName', config.username, {delay: 30});
+        await page.type('#Password', config.password, {delay: 30});
 
         /* Click the login button*/
-        await page.click('#Enter')
+        await page.click('#Enter');
         //await page.
-        await page.waitForNavigation();
+        try{
+            await page.waitForSelector('.sub-header2-text', { timeout: 1000 });
+            await page.click('#Enter');
+        }
+        catch{
+            
+            await page.waitForNavigation();
+        }
+        
         //await page.waitFor(3000);
-        await page.click('#user_menu_name');
-        await page.click('#logoff');
+        //await page.click('#user_menu_name');
+        //await page.click('#logoff');
 }
 
 scrapeMLS('https://cheyenne.paragonrels.com/ParagonLS/Default.mvc/Login');
